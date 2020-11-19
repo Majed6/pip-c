@@ -1,0 +1,48 @@
+<html lang="en">
+<head>
+    <title>Countdown</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden
+        }
+    </style>
+</head>
+<body>
+<video id="countdown-player"></video>
+</body>
+<script>
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const countdownCanvas = canvas.getContext('2d', {alpha: false});
+    const video = document.getElementById('countdown-player');
+    video.muted = true;
+    video.srcObject = canvas.captureStream();
+    video.play();
+    const params = (new URL(document.location)).searchParams;
+    const date = Date.parse(params.get("date"));
+
+    function drawCountdown(days, hours, minutes, seconds) {
+        countdownCanvas.clearRect(0, 0, canvas.width, canvas.height);
+        countdownCanvas.fillStyle = "black";
+        countdownCanvas.fillRect(0, 0, canvas.width, canvas.height);
+        countdownCanvas.font = '20vh roboto';
+        countdownCanvas.fillStyle = "white"
+        countdownCanvas.textAlign = 'center';
+        countdownCanvas.fillText(`${days}:${hours}:${minutes}:${seconds}`, canvas.width / 2, canvas.height / 2);
+    }
+
+    function countdown() {
+        const now = new Date().getTime();
+        const diff = date - now
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        drawCountdown(days, hours, minutes, seconds);
+    }
+
+    window.setInterval(countdown, 1000);
+</script>
+</html>
